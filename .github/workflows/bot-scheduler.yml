@@ -27,4 +27,4 @@ jobs:
         DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
         DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
         STEAM_GROUP_URL: ${{ secrets.STEAM_GROUP_URL }}
-      run: python bot.py
+      run: python FRT_bot.py
