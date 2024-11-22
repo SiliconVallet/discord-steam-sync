@@ -90,18 +90,16 @@ class EventSync(commands.Cog):
             driver = webdriver.Chrome(service=service, options=options)
             driver.get(f"{self.steam_url}/events")
             
-            # Premier mois
-            print("Page source après chargement initial:")
-            initial_month = driver.find_element(By.ID, 'futureEventsHeader').text
-            print(initial_month)
             future_events = []
-            future_events.extend(self._parse_events_page(driver.page_source))
             
-            # Trouver tous les liens de navigation
+            # Premier mois
+            # initial_month = driver.find_element(By.ID, 'futureEventsHeader').text
+            # print(f"Mois actuel: {initial_month}")
+            # future_events.extend(self._parse_events_page(driver.page_source))
+            
+            # Mois suivant
             next_buttons = driver.find_elements(By.CSS_SELECTOR, "a[href*='javascript:calChangeMonth']")
-            next_month_button = None
-            
-            # Chercher le bon bouton (celui qui pointe vers le mois suivant)
+            next_month_button = None    
             for button in next_buttons:
                 img = button.find_element(By.TAG_NAME, 'img')
                 if 'monthForwardOn' in img.get_attribute('src'):
@@ -109,22 +107,41 @@ class EventSync(commands.Cog):
                     break
             
             if next_month_button:
-                # Sauvegarder l'ancien contenu pour comparaison
                 old_content = driver.page_source
                 driver.execute_script("arguments[0].click();", next_month_button)
                 
-                # Attendre que le contenu change
                 WebDriverWait(driver, 10).until(
                     lambda d: d.page_source != old_content
                 )
                 
-                time.sleep(1)  # Attente supplémentaire
+                time.sleep(1)
                 
-                # Vérifier le mois
                 new_month = driver.find_element(By.ID, 'futureEventsHeader').text
-                print(f"Nouveau mois: {new_month}")
-                
+                print(f"Mois suivant: {new_month}")
                 future_events.extend(self._parse_events_page(driver.page_source))
+
+                # Recharger les boutons pour le mois précédent
+                next_buttons = driver.find_elements(By.CSS_SELECTOR, "a[href*='javascript:calChangeMonth']")
+                prev_month_button = None
+                for button in next_buttons:
+                    img = button.find_element(By.TAG_NAME, 'img')
+                    if 'monthBackOn' in img.get_attribute('src'):
+                        prev_month_button = button
+                        break
+
+                if prev_month_button:
+                    old_content = driver.page_source
+                    driver.execute_script("arguments[0].click();", prev_month_button)
+                    
+                    WebDriverWait(driver, 10).until(
+                        lambda d: d.page_source != old_content
+                    )
+                    
+                    time.sleep(1)
+                    
+                    current_month = driver.find_element(By.ID, 'futureEventsHeader').text
+                    print(f"Mois précédent: {current_month}")
+                    future_events.extend(self._parse_events_page(driver.page_source))
             
             driver.quit()
             return future_events
@@ -236,7 +253,7 @@ class EventSync(commands.Cog):
                     continue
 
                 time_str = time_elem.text.strip().lower()
-                
+                print (time_str)
                 # Gestion du format français (11h00)
                 if 'h' in time_str:
                     hour, minute = time_str.replace('h', ':').split(':')
@@ -308,6 +325,7 @@ class EventSync(commands.Cog):
                     discord_event_dict[steam_id] = event
 
             for steam_event in steam_events:
+                print(steam_event['raw_date'])
                 steam_time = steam_event['raw_date'].astimezone(paris_tz)
                 
                 if steam_time <= current_time:
