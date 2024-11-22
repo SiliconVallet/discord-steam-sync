@@ -251,9 +251,17 @@ class EventSync(commands.Cog):
                     elif not is_pm and hour == 12:
                         hour = 0
 
+                # Créer d'abord la date en UTC
                 naive_date = datetime(year, month_num, int(day), hour, minute)
-                event_date = paris_tz.localize(naive_date)
+                utc_tz = pytz.UTC
                 
+                # Considérer que l'heure Steam est en UTC+1 (CET)
+                cet_tz = pytz.timezone('Europe/Paris')
+                event_date = cet_tz.localize(naive_date)
+                
+                # Convertir en UTC pour Discord
+                utc_date = event_date.astimezone(utc_tz)
+
                 title = block.find('a', class_='headlineLink').text
                 event_id = block.get('id').split('_')[0]
                 event_url = f"{self.steam_url}/events/{event_id}"
@@ -263,7 +271,7 @@ class EventSync(commands.Cog):
                 event = {
                     'title': title,
                     'date': event_date.strftime("%d %B %Y à %H:%M"),
-                    'raw_date': event_date,
+                    'raw_date': utc_date,
                     'url': event_url,
                     'description': description,
                     'image_url': image_url
