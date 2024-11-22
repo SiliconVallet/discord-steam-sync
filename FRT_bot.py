@@ -193,10 +193,15 @@ class EventSync(commands.Cog):
                 
         paris_tz = pytz.timezone('Europe/Paris')
         
-        MONTHS_FR = {
+        MONTHS = {
+            # Français
             'janvier': 1, 'février': 2, 'mars': 3, 'avril': 4,
             'mai': 5, 'juin': 6, 'juillet': 7, 'août': 8,
-            'septembre': 9, 'octobre': 10, 'novembre': 11, 'décembre': 12
+            'septembre': 9, 'octobre': 10, 'novembre': 11, 'décembre': 12,
+            # English
+            'january': 1, 'february': 2, 'march': 3, 'april': 4,
+            'may': 5, 'june': 6, 'july': 7, 'august': 8,
+            'september': 9, 'october': 10, 'november': 11, 'december': 12
         }
         
         month_str = soup.find('p', id='futureEventsHeader')
@@ -210,7 +215,7 @@ class EventSync(commands.Cog):
             return events
             
         month_name = month_parts[0].lower()
-        month_num = MONTHS_FR.get(month_name)
+        month_num = MONTHS.get(month_name)
         if not month_num:
             print(f"Mois non reconnu: {month_name}")
             return events
@@ -246,7 +251,6 @@ class EventSync(commands.Cog):
                     elif not is_pm and hour == 12:
                         hour = 0
 
-                # Créer la date directement dans le fuseau horaire de Paris
                 naive_date = datetime(year, month_num, int(day), hour, minute)
                 event_date = paris_tz.localize(naive_date)
                 
