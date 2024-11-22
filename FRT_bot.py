@@ -139,7 +139,8 @@ class EventSync(commands.Cog):
     def get_event_details(self, event_url):
         """Récupère les détails d'un événement Steam (description et image)"""
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'timezone': 'Europe/Paris'
         }
         
         try:
@@ -164,8 +165,8 @@ class EventSync(commands.Cog):
                     description = soup_text.get_text()
                     # Nettoyer les sauts de ligne multiples
                     description = '\n'.join(line.strip() for line in description.split('\n') if line.strip())
-                    print(f"HTML brut: {html_content}")
-                    print(f"Description trouvée: {description}")
+                    # print(f"HTML brut: {html_content}")
+                    # print(f"Description trouvée: {description}")
             
             # Récupérer l'image depuis eventLogo
             event_logo = soup.find('div', class_='eventLogo')

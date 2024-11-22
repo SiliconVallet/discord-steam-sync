@@ -2,7 +2,7 @@ name: Run Discord Steam Bot
 
 on:
   schedule:
-    - cron: '*/20 8-23 * * *'  # Runs every 20 minutes, between 08:00 and 23:59.
+    - cron: '*/30 8-23 * * *'  # Runs every 30 minutes, between 08:00 and 23:59.
   workflow_dispatch:
 
 jobs:
@@ -24,6 +24,11 @@ jobs:
         
     - name: Install ChromeDriver
       uses: nanasess/setup-chromedriver@v2
+
+    # Étape pour définir le fuseau horaire
+    - name: Set Timezone to Europe/Paris
+      run: |
+        sudo timedatectl set-timezone Europe/Paris
     
     - name: Install dependencies
       run: |
