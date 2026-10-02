@@ -92,7 +92,12 @@ class EventSync(commands.Cog):
         try:
             service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=options)
+
+            # Forcer le fuseau horaire du navigateur, indépendamment de l'IP du runner
+            driver.execute_cdp_cmd('Emulation.setTimezoneOverride', {'timezoneId': 'Europe/Paris'})
+
             driver.get(f"{self.steam_url}/events")
+            
 
             future_events = []
 
