@@ -5,6 +5,9 @@ on:
     - cron: '*/30 8-23 * * *'  # Runs every 30 minutes, between 08:00 and 23:59.
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
