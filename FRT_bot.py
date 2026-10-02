@@ -105,6 +105,12 @@ class EventSync(commands.Cog):
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, 'futureEventsHeader'))
             )
+            # Forcer un refresh pour que le JS recalcule les heures avec le bon fuseau
+            driver.refresh()
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, 'futureEventsHeader'))
+            )
+
 
             # --- Mois actuel ---
             initial_month = driver.find_element(By.ID, 'futureEventsHeader').text
